@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#123f3c" />
+    <title>Photo Overlay</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Photo Overlay</p>
+          <h1>Line up the old view and make the new one match it.</h1>
+          <p class="lede">
+            Use a historic photo as a ghost layer over the live camera, then walk, tilt, and align until the building sits back in the frame.
+          </p>
+        </div>
+
+        <div class="hero-actions">
+          <button class="pill-button" id="openHistory">Open Time Lens</button>
+          <button class="pill-button ghost" id="loadSample">Load sample deck</button>
+        </div>
+      </section>
+
+      <nav class="top-nav" aria-label="Sections">
+        <button class="nav-pill is-active" data-view="time-lens">Time Lens</button>
+        <button class="nav-pill" data-view="archive">Archive</button>
+        <button class="nav-pill" data-view="notes">Notes</button>
+      </nav>
+
+      <section class="workspace">
+        <aside class="sidebar">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Deck</p>
+                <h2>Walk photos</h2>
+              </div>
+              <div class="score" id="photoDeckCount">0 loaded</div>
+            </div>
+            <p class="panel-copy">
+              Scroll through a small stack of reference photos, tap one to load it, and keep a few shots ready while you walk.
+            </p>
+            <div class="photo-deck" id="photoDeck" aria-label="Historic photo deck"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Reference</p>
+                <h2>Historic photo</h2>
+              </div>
+              <label class="file-button">
+                <input id="historicFile" type="file" accept="image/*" multiple />
+                Add photos
+              </label>
+            </div>
+            <p class="panel-copy">
+              Pick a historic image from the village archive. The app will treat it like a transparent film in front of the live camera.
+            </p>
+            <div class="reference-preview" id="referencePreview">
+              <span>No photo loaded yet</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Alignment</p>
+                <h2>Guide</h2>
+              </div>
+              <div class="score" id="alignmentScore">0%</div>
+            </div>
+            <p class="alignment-instruction" id="alignmentInstruction">Load a reference photo and start the camera.</p>
+            <ul class="signal-list">
+              <li><span>GPS</span><strong id="gpsSignal">Waiting</strong></li>
+              <li><span>Compass</span><strong id="compassSignal">Waiting</strong></li>
+              <li><span>Tilt</span><strong id="tiltSignal">Waiting</strong></li>
+            </ul>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Modes</p>
+                <h2>Overlay</h2>
+              </div>
+            </div>
+            <div class="mode-switch" role="tablist" aria-label="Overlay modes">
+              <button class="mode is-active" data-mode="split">Split</button>
+              <button class="mode" data-mode="ghost">Ghost</button>
+            </div>
+            <label class="range-row">
+              <span>Historic opacity</span>
+              <input id="opacity" type="range" min="10" max="90" value="48" />
+            </label>
+            <label class="range-row">
+              <span>Split position</span>
+              <input id="split" type="range" min="8" max="92" value="50" />
+            </label>
+          </div>
+        </aside>
+
+        <section class="camera-column">
+          <div class="camera-stage" id="cameraStage">
+            <video id="cameraFeed" autoplay muted playsinline></video>
+            <div class="camera-placeholder" id="cameraPlaceholder">
+              <strong>Camera idle</strong>
+              <span>Start the rear camera to align the shot.</span>
+            </div>
+
+            <img id="historicOverlay" class="historic-overlay" alt="" />
+
+            <div class="camera-hud">
+              <div class="hud-row">
+                <div>
+                  <p class="panel-kicker">Viewpoint</p>
+                  <h2 id="viewpointLabel">Historic Collingham</h2>
+                </div>
+                <div class="score matched" id="hudScore">82% matched</div>
+              </div>
+              <p id="hudHint">Move left a touch and tilt up to line up the roofline.</p>
+            </div>
+
+            <div class="split-handle" id="splitHandle" aria-hidden="true">
+              <span>Then</span>
+              <span>Now</span>
+            </div>
+
+            <div class="capture-bar">
+              <button class="secondary-button" id="saveViewpoint">Save spot</button>
+              <button class="capture-button" id="captureButton" aria-label="Capture photo">
+                <span></span>
+              </button>
+              <button class="secondary-button" id="cameraButton">Camera</button>
+            </div>
+          </div>
+
+          <div class="panel result-panel" id="resultPanel" hidden>
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Before / after</p>
+                <h2>Comparison</h2>
+              </div>
+              <button class="pill-button ghost" id="downloadComparison">Download</button>
+            </div>
+            <div class="comparison-stage">
+              <img id="afterImage" alt="Captured modern view" />
+              <div class="comparison-before" id="comparisonBefore">
+                <img id="beforeImage" alt="Historic reference" />
+              </div>
+              <label class="comparison-slider" id="comparisonSlider">
+                <span>Then / now</span>
+                <input id="comparisonRange" type="range" min="5" max="95" value="50" />
+              </label>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>

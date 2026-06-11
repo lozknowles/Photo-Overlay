@@ -121,6 +121,6 @@ const server = http.createServer((req, res) => {
 
 const port = Number(process.env.PORT || 4178);
 server.listen(port, '127.0.0.1', () => {
-  console.log(`Photo Overlay running at http://127.0.0.1:${port}`);
+  console.log(`Photo Overlay App running at http://127.0.0.1:${port}`);
   console.log(`Gallery directory: ${defaultGalleryDir}`);
 });

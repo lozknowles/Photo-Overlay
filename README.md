@@ -1,4 +1,4 @@
-# Photo Overlay
+# Photo Overlay App
 
 Photo Overlay is a browser-first rephotography app for historic buildings and village history walks.
 

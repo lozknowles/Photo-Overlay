@@ -5,6 +5,12 @@ import { fileURLToPath } from 'node:url';
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 const bundledPhoto = path.join(rootDir, 'assets', 'demo-historic-collingham-reference.png');
+const basePath = (() => {
+  const raw = process.env.BASE_PATH || '';
+  if (!raw) return '';
+  const trimmed = raw.startsWith('/') ? raw : `/${raw}`;
+  return trimmed.endsWith('/') ? trimmed.slice(0, -1) : trimmed;
+})();
 const defaultGalleryDir = process.env.PHOTO_OVERLAY_GALLERY_DIR
   || 'C:\\Users\\lozkn\\OneDrive\\Documents\\CDLHS\\JRdigitisation\\CollinghamPictures';
 const allowedExts = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif']);
@@ -30,6 +36,13 @@ const isWithin = (baseDir, targetPath) => {
   return target === base || target.startsWith(`${base}${path.sep}`);
 };
 
+const stripBasePath = (pathname) => {
+  if (!basePath) return pathname;
+  if (pathname === basePath) return '/';
+  if (pathname.startsWith(`${basePath}/`)) return pathname.slice(basePath.length);
+  return null;
+};
+
 const readGalleryItems = () => {
   const items = [];
 
@@ -38,7 +51,7 @@ const readGalleryItems = () => {
       id: 'bundled-reference',
       name: 'Historic Collingham reference',
       source: 'bundled',
-      src: '/assets/demo-historic-collingham-reference.png'
+      src: 'assets/demo-historic-collingham-reference.png'
     });
   }
 
@@ -56,7 +69,7 @@ const readGalleryItems = () => {
       id: `gallery:${fileName}`,
       name: path.parse(fileName).name,
       source: 'gallery',
-      src: `/api/photo?name=${encodeURIComponent(fileName)}`
+      src: `api/photo?name=${encodeURIComponent(fileName)}`
     });
   }
 
@@ -82,7 +95,13 @@ const serveFile = (res, filePath) => {
 
 const server = http.createServer((req, res) => {
   const requestUrl = new URL(req.url || '/', 'http://127.0.0.1');
-  const pathname = decodeURIComponent(requestUrl.pathname);
+  const strippedPathname = stripBasePath(decodeURIComponent(requestUrl.pathname));
+  if (strippedPathname === null) {
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('Not found');
+    return;
+  }
+  const pathname = strippedPathname;
 
   if (pathname === '/api/gallery') {
     sendJson(res, {
@@ -121,6 +140,6 @@ const server = http.createServer((req, res) => {
 
 const port = Number(process.env.PORT || 4178);
 server.listen(port, '127.0.0.1', () => {
-  console.log(`Photo Overlay App running at http://127.0.0.1:${port}`);
+  console.log(`Photo Overlay App running at http://127.0.0.1:${port}${basePath || ''}`);
   console.log(`Gallery directory: ${defaultGalleryDir}`);
 });

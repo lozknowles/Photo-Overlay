@@ -22,6 +22,8 @@ For the full photo-deck experience, run the bundled Node server:
 node server.js
 ```
 
+To stage it under a subpath such as `/localwalks`, set `BASE_PATH=/localwalks` before starting the server.
+
 By default it looks for gallery photos in:
 
 `C:\Users\lozkn\OneDrive\Documents\CDLHS\JRdigitisation\CollinghamPictures`
